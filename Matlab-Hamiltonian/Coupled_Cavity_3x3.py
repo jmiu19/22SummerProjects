@@ -11,25 +11,27 @@ import os
 
 ## Create constant
 
-amax = 401 # number of iteration when computing eigenvalues
+amax = 400 # number of iteration when computing eigenvalues
 
-## Default constants
-C = 8 # Coupling
-Ecm = 1480
-Rabic = 15
-RabiC = 15
-XC = 1600
-G=5 # Gain
-L=5 # Loss
+# ## Default constants
+# C = 8 # Coupling
+# Ecm = 1480
+# Rabic = 15
+# RabiC = 15
+# XC = 1600
+# G=5 # Gain
+# Gu = G + 0.1*400
+# L=5 # Loss
 
-## ask user for constants input
-# C = input('Coupling coefficient between photonic cavities: ')
-# Rabic = input('Coupling coefficient between photonic cavity 1 and exciton: ')
-# RabiC = input('Coupling coefficient between photonic cavity 2 and exciton: ')
-# Ecm = input('Energy of each of the photonic cavities: ')
-# XC = input('Energy of the exciton: ')
-# G = input('Lowest gain: ')
-# L = input('Loss of the cavity: ')
+# ask user for constants input
+C = int(input('Coupling coefficient between photonic cavities: '))
+Rabic = int(input('Coupling coefficient between photonic cavity 1 and exciton: '))
+RabiC = int(input('Coupling coefficient between photonic cavity 2 and exciton: '))
+Ecm = int(input('Energy of each of the photonic cavities: '))
+XC = int(input('Energy of the exciton: '))
+G = int(input('Lowest gain: '))
+Gu = int(input('Highest gain: '))
+L = int(input('Loss of the cavity: '))
 
 ## Create empty dataframe for storing data
 df_Eigen = pd.DataFrame(columns=['eigVal',
@@ -50,8 +52,8 @@ df_Eigen = pd.DataFrame(columns=['eigVal',
 
 initialG = G
 initialL = L
-for a in range(1,amax+1):
-    G = initialG + 0.1*(a-1)
+for a in range(0,amax):
+    G = initialG + (Gu-G)/(amax)*(a)
     L = initialL
     M = np.array([[  Ecm+1j*G,           C,    RabiC/2],
                   [        C,     Ecm-1j*L,    Rabic/2],
@@ -194,6 +196,31 @@ eigVec1, eigVec2, eigVec3 = [vecs[0] for vecs in eigVecsSet], [vecs[1] for vecs 
 #vecFig.write_html('plots/Eigenvec.html', auto_open=True)
 #################################################
 
+
+VecFigs = [[go.Figure(), go.Figure(), go.Figure()], [go.Figure(), go.Figure(), go.Figure()]]
+VecFigsNames = [['Photonic cavity 1 portion (real part)',
+                 'Photonic cavity 2 portion (real part)',
+                 'Exciton portion (real part)'],
+                ['Photonic cavity 1 portion (complex part)',
+                 'Photonic cavity 2 portion (complex part)',
+                 'Exciton portion (complex part)']]
+for i in range(len(VecFigs)):
+    if (i==0):
+        y_data = np.real([eigVec1, eigVec2, eigVec3])
+    if (i==1):
+        y_data = np.imag([eigVec1, eigVec2, eigVec3])
+    for j in range(len(VecFigs[i])):
+        fig = VecFigs[i][j]
+        fig.add_trace(go.Scatter(x=gainVal, y=[vec[j] for vec in y_data[0]],
+                                mode='markers', name='eigenval 1'))
+        fig.add_trace(go.Scatter(x=gainVal, y=[vec[j] for vec in y_data[1]],
+                                mode='markers', name='eigenval 2'))
+        fig.add_trace(go.Scatter(x=gainVal, y=[vec[j] for vec in y_data[2]],
+                                mode='markers', name='eigenval 3'))
+        fig.update_layout(title=VecFigsNames[i][j],
+                          xaxis_title='Gain of cavity 1',
+                          showlegend=True)
+        fig.write_html('plots/' + VecFigsNames[i][j] + 'VecPlot.html', auto_open=True)
 
 ## plot the eigenvalues
 if not os.path.exists('plots'):
