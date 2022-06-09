@@ -52,7 +52,7 @@ df_Eigen.to_csv('result.csv')
 ########################################
 realEigVal = np.real(df_Eigen['eigVal'].values.tolist())
 compEigVal = np.imag(df_Eigen['eigVal'].values.tolist())
-gainVal = np.real(df_Eigen['Gain'].values.tolist())
+#gainVal = np.real(df_Eigen['Gain'].values.tolist())
 
 realEigVal1 = [vals[0] for vals in realEigVal]
 realEigVal2 = [vals[1] for vals in realEigVal]

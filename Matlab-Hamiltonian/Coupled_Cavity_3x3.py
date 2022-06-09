@@ -13,25 +13,26 @@ import os
 
 amax = 400 # number of iteration when computing eigenvalues
 
-# ## Default constants
-# C = 8 # Coupling
-# Ecm = 1480
-# Rabic = 15
-# RabiC = 15
-# XC = 1600
-# G=5 # Gain
-# Gu = G + 0.1*400
-# L=5 # Loss
+## Default constants
+C = 8 # Coupling
+detuning = -120
+XC = 1650
+Ecm = XC + detuning
+Rabic = 15
+RabiC = 15
+G=5 # Gain
+Gu = G + 0.1*400
+L=5 # Loss
 
-# ask user for constants input
-C = int(input('Coupling coefficient between photonic cavities: '))
-Rabic = int(input('Coupling coefficient between photonic cavity 1 and exciton: '))
-RabiC = int(input('Coupling coefficient between photonic cavity 2 and exciton: '))
-Ecm = int(input('Energy of each of the photonic cavities: '))
-XC = int(input('Energy of the exciton: '))
-G = int(input('Lowest gain: '))
-Gu = int(input('Highest gain: '))
-L = int(input('Loss of the cavity: '))
+# # ask user for constants input
+# C = int(input('Coupling coefficient between photonic cavities: '))
+# Rabic = int(input('Coupling coefficient between photonic cavity 1 and exciton: '))
+# RabiC = int(input('Coupling coefficient between photonic cavity 2 and exciton: '))
+# Ecm = int(input('Energy of each of the photonic cavities: '))
+# XC = int(input('Energy of the exciton: '))
+# G = int(input('Lowest gain: '))
+# Gu = int(input('Highest gain: '))
+# L = int(input('Loss of the cavity: '))
 
 ## Create empty dataframe for storing data
 df_Eigen = pd.DataFrame(columns=['eigVal',
@@ -56,7 +57,7 @@ for a in range(0,amax):
     G = initialG + (Gu-G)/(amax)*(a)
     L = initialL
     M = np.array([[  Ecm+1j*G,           C,    RabiC/2],
-                  [        C,     Ecm-1j*L,    Rabic/2],
+                  [        C,     Ecm-1j*G,    Rabic/2],
                   [  RabiC/2,     Rabic/2,         XC]])
     eigVal, eigVec = np.linalg.eig(M)
     # append eigenvals and eigenvectors to dataframe
