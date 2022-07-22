@@ -22,17 +22,17 @@ loss=linspace(0,-11,111);
 %% Polariton gain and loss tuning
 amax=401; 
 EpGL=zeros(3,amax);
-  C=5;%Coupling
+  C=8;%Coupling
   GG=0;%Loss & Gain
   LL=0 %Loss
   Xl=0.01; %exciton loss
   XC=1650;
-  detuning = 7;
+  detuning = -150;
   Ecm=XC+detuning;
   delta=50; 
   Ecc=Ecm-delta;
-  RabiC=10;
-  Rabic=10;
+  RabiC=15;
+  Rabic=15;
   
   
 
@@ -45,9 +45,9 @@ for a= 1:1:amax;
     %Ecm=Ectm*(1-(sind(0))^(2)/ntm)^(-1/2);
     syms x
         M=[
-            Ecm+1i*G,	           C,      RabiC/2;	         
-                     C,   Ecm-1i*G,      Rabic/2;    
-               RabiC/2,	     Rabic/2,	      XC
+              Ecm+1i*G,	           C,      RabiC/2;	         
+                     C,     Ecm-1i*G,      Rabic/2;    
+               RabiC/2,	     Rabic/2,           XC
            ];
         [U V] = eig(M);
         EpGL(:,a)=[V(1,1); V(2,2); V(3,3)];
@@ -125,8 +125,30 @@ plot(Gain,RealEV12,'g.','LineWidth',0.3);
 hold on;
 plot(Gain,RealEV13,'b.','LineWidth',0.3);
 hold on;
-%% Eigenvector Plot for vector 1 Imag
+
+
+%% Eigenvector Plot for vector 2 Real
 figure(9)
+plot(Gain,RealEV21,'r.','LineWidth',0.3);
+hold on;
+plot(Gain,RealEV22,'g.','LineWidth',0.3);
+hold on;
+plot(Gain,RealEV23,'b.','LineWidth',0.3);
+hold on;
+
+
+%% Eigenvector Plot for vector 3 Real
+figure(10)
+plot(Gain,RealEV31,'r.','LineWidth',0.3);
+hold on;
+plot(Gain,RealEV32,'g.','LineWidth',0.3);
+hold on;
+plot(Gain,RealEV33,'b.','LineWidth',0.3);
+hold on;
+
+
+%% Eigenvector Plot for vector 1 Imag
+figure(11)
 plot(Gain,ImagEV11,'r.','LineWidth',0.3);
 hold on;
 plot(Gain,ImagEV12,'g.','LineWidth',0.3);

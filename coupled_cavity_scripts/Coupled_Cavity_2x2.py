@@ -71,7 +71,8 @@ realCompEigVals = [[realEigVal1, realEigVal2], [compEigVal1, compEigVal2]]
 
 ## Extract the eigenvectors
 eigVecsSet = df_Eigen['eigVec']
-eigVec1, eigVec2 = [vecs[0] for vecs in eigVecsSet], [vecs[1] for vecs in eigVecsSet]
+eigVec1 = [[vecs[0][0], vecs[1][0]] for vecs in eigVecsSet]
+eigVec2 = [[vecs[0][1], vecs[1][1]] for vecs in eigVecsSet]
 HopfCoeffC = [vec[0]**2 for vec in eigVec1]
 HopfCoeffE = [vec[1]**2 for vec in eigVec1]
 
@@ -105,4 +106,4 @@ VecFig.update_layout(title= 'Hopfield Coefficients',
                   xaxis_title='Energy difference between exciton and cavity',
                   yaxis_title='Coefficient',
                   showlegend=True)
-VecFig.write_html('plots/' + names[-j-1] + 'PartEigen.html', auto_open=True)
+VecFig.write_html('plots/' + '2x2_HopfieldCoeff_woGain.html', auto_open=True)

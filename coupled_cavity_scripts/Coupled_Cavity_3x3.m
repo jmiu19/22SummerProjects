@@ -46,8 +46,7 @@ for a= 1:1:amax;
                      C,   Ecm-1i*L-x,      RabiC/2;    
                RabiC/2,	     RabiC/2,	      XC-x
            ];
-        EpGL(:,a)=solve(det(M),x);
-                disp(a)  
+        EpGL(:,a)=solve(det(M),x); 
 end
 %% Extraction
     RealEP=real(EpGL);
