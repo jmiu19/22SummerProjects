@@ -13,11 +13,21 @@ eigVals = eig(M);
 
 
 
+<<<<<<< HEAD
+% C = 8;
+% detuning = 7.5;
+% R = 5;
+% G = 4.180513;
+% G = 7;
+% X = 1650;
+% E = X + detuning;
+=======
 C = 8;
 R = 10;
 G = 5
 E = 1650;
 X = 1645;
+>>>>>>> 501c2673fea82708740fd2746e76e0485560dec2
 
 
 kappa = ((C*C)-(E*E)-(G*G)+(2*R*R)-(2*E*X))/(3) + ((2*E+X)^2)/9
@@ -32,9 +42,13 @@ val2 = (2*E+X)/3 - (1/2)*(kappa/zeta + zeta) - (sqrt(3)/2)*(kappa/zeta - zeta)*1
 val3 = (2*E+X)/3 - (1/2)*(kappa/zeta + zeta) + (sqrt(3)/2)*(kappa/zeta - zeta)*1i;
 
 
-check = [eval(eigVals(1))- val1, eval(eigVals(2))- val2, eval(eigVals(3))- val3];
+% check = [eval(eigVals(1))- val1, eval(eigVals(2))- val2, eval(eigVals(3))- val3];
 
+A = C^2 - E^2 - G^2 + 2*R^2 - 2*E*X;
+B = 2*E + X
+D = C*R^2 - E*R^2 + ((E^2)*X + (G^2)*X - (C^2)*X)/2
 
+diff = D^2 + (A*B*D)/3 + (A^2*B^2)/36 + (2*C*B^3)/27 - A^3/27 - (A^2*B^2)/81 -(2*A^2*B^2)/81
 
 
 

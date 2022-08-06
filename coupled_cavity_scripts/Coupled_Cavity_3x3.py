@@ -11,7 +11,11 @@ import os
 
 ## Create constant
 
+<<<<<<< HEAD
+amax = 800 # number of iteration when computing eigenvalues
+=======
 amax = 500 # number of iteration when computing eigenvalues
+>>>>>>> 501c2673fea82708740fd2746e76e0485560dec2
 
 ## Default constants
 C = 8 # Coupling
@@ -76,6 +80,8 @@ P = np.array([[0, 1, 0],
 
 initialG = G
 initialL = L
+
+# Compute eigenvals for H
 for a in range(0,amax+1):
     G = initialG + (Gu-initialG)/(amax)*(a)
     if (initialL == 'G'):
@@ -89,7 +95,11 @@ for a in range(0,amax+1):
     # append eigenvals and eigenvectors to dataframe
     df_Eigen.loc[len(df_Eigen.index)] = [eigVal, eigVec, G, L, C, RabiC/2, Rabic/2, Ecm, XC]
 
+<<<<<<< HEAD
+# Compute eigenvals for THT
+=======
 
+>>>>>>> 501c2673fea82708740fd2746e76e0485560dec2
 for a in range(0,amax+1):
     G = initialG + (Gu-initialG)/(amax)*(a)
     if (initialL == 'G'):
@@ -114,6 +124,18 @@ df_Eigen.to_csv('result.csv')
 
 ##############Analytical Eigenvalues###############################
 R = Rabic/2
+<<<<<<< HEAD
+E = Ecm
+X = XC
+kappa, sigma, zeta, mu1, mu2 = [], [], [], [], []
+AnaVal1, AnaVal2, AnaVal3 = [], [], []
+diffLMN = []
+diff = []
+
+# Compute the eigenvals and parameters anatically
+for a in range(0,amax+1):
+    G = initialG + (Gu-initialG)/(amax)*(a)
+=======
 kappa = []
 sigma = []
 zeta = []
@@ -137,7 +159,34 @@ for a in range(0,amax+1):
     AnaVal1 = (2*Ecm+XC)/3 + (kappa[-1]/zeta[-1] + zeta[-1])
     AnaVal2 = (2*Ecm+XC)/3 - (1/2)*(kappa[-1]/zeta[-1] + zeta[-1]) - (np.sqrt(3)/2)*(kappa[-1]/zeta[-1] - zeta[-1])*1j
     AnaVal3 = (2*Ecm+XC)/3 - (1/2)*(kappa[-1]/zeta[-1] + zeta[-1]) + (np.sqrt(3)/2)*(kappa[-1]/zeta[-1] - zeta[-1])*1j
+>>>>>>> 501c2673fea82708740fd2746e76e0485560dec2
 
+    L = (C**2) - (E**2) - (G**2) + (2*R*R) - (2*E*X)
+    M = 2*E+X
+    N = (E*E*X+G*G*X-C*C*X)/2 + C*R*R - E*R*R
+    diffLMN.append(N*N + L*M*N/3 + L*L*M*M/36 + 2*N*M*M*M - L*L*L/27 - L*L*M*M/27)
+
+    kappa.append(+ ((C*C)-(Ecm*Ecm)-(G*G)+(2*R*R)-(2*Ecm*XC))/(3)
+                 + ((2*Ecm+XC)**2)/9)
+    sigma.append(+ C*R*R
+                 - Ecm*R*R
+                 + ((Ecm*Ecm*XC+G*G*XC-C*C*XC)/2)
+                 - ((2*Ecm+XC)*(-C*C+Ecm*Ecm+2*Ecm*XC+G*G-2*R*R))/(6)
+                 + ((2*Ecm+XC)**3)/(27))
+    zeta.append((+ sigma[-1]
+                 + np.sqrt((sigma[-1]*sigma[-1])
+                 - (kappa[-1]**3) + (0*1j)))**(1/3))
+
+    mu1.append(kappa[-1]/zeta[-1] - zeta[-1])
+    mu2.append(kappa[-1]/zeta[-1] + zeta[-1])
+
+    AnaVal1.append((2*Ecm+XC)/3 + (kappa[-1]/zeta[-1] + zeta[-1]))
+    AnaVal2.append((2*Ecm+XC)/3 - (1/2)*(kappa[-1]/zeta[-1] + zeta[-1])
+                                - (np.sqrt(3)/2)*(kappa[-1]/zeta[-1] - zeta[-1])*1j)
+    AnaVal3.append((2*Ecm+XC)/3 - (1/2)*(kappa[-1]/zeta[-1] + zeta[-1])
+                                + (np.sqrt(3)/2)*(kappa[-1]/zeta[-1] - zeta[-1])*1j)
+
+    diff.append(kappa[-1]**3 - sigma[-1]**2)
 
 ########################################
 ##                                    ##
@@ -189,6 +238,21 @@ MatchIndex = [[RMatchV1V2Index, RMatchV1V3Index, RMatchV2V3Index],
               [CMatchV1V2Index, CMatchV1V3Index, CMatchV2V3Index]]
 
 
+########### THT eigenstuff #############################
+THTrealEigVal = np.real(df_THT_Eigen['eigVal'].values.tolist())
+THTcompEigVal = np.imag(df_THT_Eigen['eigVal'].values.tolist())
+THTgainVal = np.real(df_THT_Eigen['Gain'].values.tolist())
+
+THTrealEigVal1 = [vals[0] for vals in THTrealEigVal]
+THTrealEigVal2 = [vals[1] for vals in THTrealEigVal]
+THTrealEigVal3 = [vals[2] for vals in THTrealEigVal]
+
+THTcompEigVal1 = [vals[0] for vals in THTcompEigVal]
+THTcompEigVal2 = [vals[1] for vals in THTcompEigVal]
+THTcompEigVal3 = [vals[2] for vals in THTcompEigVal]
+
+THTrealCompEigVals = [[THTrealEigVal1, THTrealEigVal2, THTrealEigVal3], [THTcompEigVal1, THTcompEigVal2, THTcompEigVal3]]
+
 
 ## Extract the eigenvectors
 eigVecsSet = df_Eigen['eigVec']
@@ -221,9 +285,11 @@ hopfieldCoeff = [[hopfieldCoeff11, hopfieldCoeff12, hopfieldCoeff13],
                  [hopfieldCoeff31, hopfieldCoeff32, hopfieldCoeff33]]
 
 orderParameter2 = []
+# the second way of compute order parameter
 for i in range(len(realCompEigVals[1][1])):
     orderParameter2.append(abs(realCompEigVals[1][0][i])+abs(realCompEigVals[1][1][i])+abs(realCompEigVals[1][2][i]))
 
+# the first way of computing order parameter
 orderParameter1 = []
 eigenVecs = [eigVec1, eigVec2, eigVec3]
 for i in range(len(eigVec1)):
@@ -246,6 +312,14 @@ for i in range(len(eigVec1)):
 ## since the results are computed numerically
 ## two identical eigenvalues might have a very small numerical difference
 ## we define the maximal difference two eigenvals can have to be considered as being equal
+
+############ use max difference to define threshold #################
+# threshold = 0                                                     #
+# for i in range(len(realCompEigVals)):                             #
+#     for j in range(len(realCompEigVals[i])):                      #
+#         if threshold < max(np.diff(realCompEigVals[i][j]))/3:     #
+#             threshold = max(np.diff(realCompEigVals[i][j]))/3     #
+#####################################################################
 threshold = 0.5
 
 ## we check the real part and the complex part separately
@@ -332,9 +406,8 @@ if not os.path.exists('plots'):
 #vecFig.write_html('plots/Eigenvec.html', auto_open=True)
 #################################################
 
-###########################################################################################
-## Make the eigenvector plots separately
-# 3 for real part and 3 for complex part
+################### Make the eigenvector plots separately ##################################
+## 3 for real part and 3 for complex part
 # one eigenmode per plot, three components per plot
 VecFigs = [[go.Figure(), go.Figure(), go.Figure()], [go.Figure(), go.Figure(), go.Figure()]]
 VecFigsNames = [['Eigenmode1_realPart',
@@ -368,8 +441,8 @@ for i in range(len(VecFigs)):
                           showlegend=True)
         fig.write_html('plots/' + VecFigsNames[i][j] + 'VecPlot.html', auto_open=False)
 
-###########################################################################################
-## Make 3 eigenmodes in one plot, 3x3 components in one plots
+#################### Make 3 eigenmodes in one plot #########################################
+## 3x3 components in one plots
 # separate real and complex parts
 FigNames = ['RealPart', 'ComplexPart']
 FigTitles = ['Real part eigenmodes', 'Complex part eigenmodes']
@@ -393,16 +466,14 @@ for i in range(len(VecFigs)):
                       showlegend=True)
     fig.write_html('plots/' + FigNames[i] + 'VecPlot.html', auto_open=False)
 
-###########################################################################################
-## plot the eigenvalues
-# make real and complex part separately
+#################### Plot the eigenvalues ##################################################
+## make real and complex part separately
 minRealVertical = min([min(realCompEigVals[0][i]) for i in range(len(realCompEigVals[0]))])
 maxRealVertical = max([max(realCompEigVals[0][i]) for i in range(len(realCompEigVals[0]))])
 numOfPoints = len(gainVal)
 valNames = ['Eigen Val 1', 'Eigen Val 2', 'Eigen Val 3', 'Complex', 'Real']
 valColors = ['rgb(15,25,195)', 'rgb(195,5,25)', 'rgb(10,195,25)']
 figs = [go.Figure(), go.Figure()]
-
 for j in range(len(['realPart', 'complexPart'])):
     fig = figs[j]
     for i in range(len(['EigenVal1', 'EigenVal2', 'EigenVal3'])):
@@ -441,8 +512,8 @@ for j in range(len(['realPart', 'complexPart'])):
                       showlegend=True)
     fig.write_html('plots/' + valNames[-j-1] + 'PartEigen.html', auto_open=True)
 
-###########################################################################################
-## plot the Hopfield coefficients for each eigenmode separately
+############ Plot the Hopfield coefficients ###############################################
+## for each eigenmode separately
 hopFigNames = ['Gainy Cavity', 'Lossy Cavity', 'Exciton']
 for j in range(len(hopfieldCoeff)):
     hopFig = go.Figure()
@@ -455,8 +526,7 @@ for j in range(len(hopfieldCoeff)):
                          showlegend=True)
     hopFig.write_html('plots/' + 'Hopfield_3x3_mode' + str(j+1) + '.html', auto_open=False)
 
-###########################################################################################
-## plot all Hopfield coefficients of all eigenmodes in one plot
+############ Plot all Hopfield coefficients of all eigenmodes in one plot #################
 hopFigNames = ['Gainy Cavity', 'Lossy Cavity', 'Exciton']
 hopColors = ['red', 'green', 'blue']
 hopFigAll = go.Figure()
@@ -476,8 +546,7 @@ hopFigAll.write_html('plots/' + 'Hopfield_3x3_mode_ALL' + '.html', auto_open=Tru
 
 
 
-###########################################################################################
-## make the phase transition plot
+############# Make the phase transition plot ##############################################
 phaseTransPlot = go.Figure()
 phaseTransPlot.add_trace(go.Scatter(x=gainVal, y=orderParameter1,
                                     mode='markers', name='1st method'))
@@ -490,6 +559,62 @@ phaseTransPlot.update_layout(title= 'Order Paramter',
 phaseTransPlot.write_html('plots/' + 'orderParameter.html', auto_open=False)
 
 
+<<<<<<< HEAD
+############## Plot analytic solution parameters ##########################################
+AnaParaPlot = go.Figure()
+AnaParaPlot.add_trace(go.Scatter(x=gainVal, y=np.real(diff),
+                                 mode='markers', name='kappa3 - sigma2'))
+AnaParaPlot.add_trace(go.Scatter(x=gainVal, y=np.imag(diffLMN),
+                                 mode='markers', name='kappa3 - sigma2 (LMN)'))
+# AnaParaPlot.add_trace(go.Scatter(x=gainVal, y=np.real(mu2),
+#                                  mode='markers', name='real of mu2 (kappa/zeta + zeta)'))
+# AnaParaPlot.add_trace(go.Scatter(x=gainVal, y=np.imag(mu2),
+#                                  mode='markers', name='imag of mu2'))
+# AnaParaPlot.add_trace(go.Scatter(x=gainVal, y=kappa,
+#                                  mode='markers', name='kappa'))
+AnaParaPlot.add_trace(go.Scatter(x=gainVal, y=[np.real(kappa[i]-(zeta[i]**2)) for i in range(len(kappa))],
+                                 mode='markers', name='kappa - zeta2 real'))
+AnaParaPlot.add_trace(go.Scatter(x=gainVal, y=[np.imag(kappa[i]-zeta[i]) for i in range(len(kappa))],
+                                 mode='markers', name='kappa - zeta2 image'))
+# AnaParaPlot.add_trace(go.Scatter(x=gainVal, y=np.imag(zeta),
+#                                  mode='markers', name='imag of zeta'))
+AnaParaPlot.update_layout(title= 'Analytic solution parameters',
+                          xaxis_title='Gain of Band 1',
+                          yaxis_title= 'vals',
+                          showlegend=True)
+AnaParaPlot.write_html('plots/' + 'AnalyticSolutionParameters.html', auto_open=False)
+
+
+############ Plot analytic solution eigenvalues ###############################################
+AnaValRPlot = go.Figure()
+AnaValRPlot.add_trace(go.Scatter(x=gainVal, y=np.real(AnaVal1),
+                                 mode='markers', name='Eigval 1'))
+AnaValRPlot.add_trace(go.Scatter(x=gainVal, y=np.real(AnaVal2),
+                                 mode='markers', name='Eigval 2'))
+AnaValRPlot.add_trace(go.Scatter(x=gainVal, y=np.real(AnaVal3),
+                                 mode='markers', name='Eigval 3'))
+AnaValRPlot.update_layout(title= 'Analytic solution eigenvalues real part',
+                          xaxis_title='Gain of Band 1',
+                          yaxis_title= 'vals',
+                          showlegend=True)
+AnaValRPlot.write_html('plots/' + 'AnalyticRealEigenVals.html', auto_open=False)
+
+AnaValCPlot = go.Figure()
+AnaValCPlot.add_trace(go.Scatter(x=gainVal, y=np.imag(AnaVal1),
+                                 mode='markers', name='Eigval 1'))
+AnaValCPlot.add_trace(go.Scatter(x=gainVal, y=np.imag(AnaVal2),
+                                 mode='markers', name='Eigval 2'))
+AnaValCPlot.add_trace(go.Scatter(x=gainVal, y=np.imag(AnaVal3),
+                                 mode='markers', name='Eigval 3'))
+AnaValCPlot.update_layout(title= 'Analytic solution eigenvalues imaginary part',
+                          xaxis_title='Gain of Band 1',
+                          yaxis_title= 'vals',
+                          showlegend=True)
+AnaValCPlot.write_html('plots/' + 'AnalyticImaginaryEigenVals.html', auto_open=False)
+
+
+################# Plot the THT eigenvalues ###################################################
+=======
 ###########################################################################################
 ## plot analytic solution of eigenvals
 phaseTransPlot = go.Figure()
@@ -511,12 +636,16 @@ phaseTransPlot.write_html('plots/' + 'AnalyticSolutionParameters.html', auto_ope
 
 ###########################################################################################
 ## plot the eigenvalues
+>>>>>>> 501c2673fea82708740fd2746e76e0485560dec2
 # make real and complex part separately
 numOfPoints = len(gainVal)
 valNames = ['Eigen Val 1', 'Eigen Val 2', 'Eigen Val 3', 'Complex', 'Real']
 valColors = ['rgb(15,25,195)', 'rgb(195,5,25)', 'rgb(10,195,25)']
 figs = [go.Figure(), go.Figure()]
+<<<<<<< HEAD
+=======
 
+>>>>>>> 501c2673fea82708740fd2746e76e0485560dec2
 for j in range(len(['realPart', 'complexPart'])):
     fig = figs[j]
     for i in range(len(['EigenVal1', 'EigenVal2', 'EigenVal3'])):
