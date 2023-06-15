@@ -10,24 +10,21 @@ import os
 ########################################
 
 ## Create constant
-
-
 amax = 800 # number of iteration when computing eigenvalues
-amax = 500 # number of iteration when computing eigenvalues
 
 ## Default constants
-C = 8 # Coupling
-detuning = 7.5
-XC = 1650
-Rabic = 10
-RabiC = 10
+C = 1 # Coupling
+detuning = 3/4
+XC = 0
+Rabic = 1
+RabiC = 1
 G= 0 # Gain
-Gu = 30
+Gu = 5
 L='G' # Loss
 
-# # ask user for constants input
 # C = float(input('Coupling coefficient between photonic cavities: '))
 # Rabic = float(input('Coupling coefficient between photonic cavity 1 and exciton: '))
+# # ask user for constants input
 # RabiC = float(input('Coupling coefficient between photonic cavity 2 and exciton: '))
 # detuning = float(input('Detuning of the photonic cavities: '))
 # XC = float(input('Energy of the exciton: '))
@@ -86,9 +83,9 @@ for a in range(0,amax+1):
         L = G
     else:
         L = float(initialL)
-    H = np.array([[  Ecm-1j*G+3j,            C,    RabiC/2],
-                  [         C,     Ecm+1j*L+3j,    Rabic/2],
-                  [   RabiC/2,      Rabic/2,         XC+3j]])
+    H = np.array([[  Ecm-1j*G,            C,    RabiC/2],
+                  [         C,     Ecm+1j*L,    Rabic/2],
+                  [   RabiC/2,      Rabic/2,         XC]])
     eigVal, eigVec = np.linalg.eig(H)
     # append eigenvals and eigenvectors to dataframe
     df_Eigen.loc[len(df_Eigen.index)] = [eigVal, eigVec, G, L, C, RabiC/2, Rabic/2, Ecm, XC]
@@ -127,8 +124,6 @@ diffLMN = []
 diff = []
 
 # Compute the eigenvals and parameters anatically
-for a in range(0,amax+1):
-    G = initialG + (Gu-initialG)/(amax)*(a)
 kappa = []
 sigma = []
 zeta = []
@@ -141,17 +136,6 @@ AnaVal3 = []
 
 for a in range(0,amax+1):
     G = initialG + (Gu-initialG)/(amax)*(a)
-
-    kappa.append(((C*C)-(Ecm*Ecm)-(G*G)+(2*R*R)-(2*Ecm*XC))/(3) + ((2*Ecm+XC)**2)/9)
-    sigma.append(C*R*R-Ecm*R*R+((Ecm*Ecm*XC+G*G*XC-C*C*XC)/2)-((2*Ecm+XC)*(-C*C+Ecm*Ecm+2*Ecm*XC+G*G-2*R*R))/(6)+((2*Ecm+XC)**3)/(27))
-    zeta.append((sigma[-1] + np.sqrt((sigma[-1]*sigma[-1]) - (kappa[-1]**3) + (0*1j)))**(1/3))
-
-    mu1.append(kappa[-1]/zeta[-1] - zeta[-1])
-    mu2.append(kappa[-1]/zeta[-1] + zeta[-1])
-
-    # AnaVal1 = (2*Ecm+XC)/3 + (kappa[-1]/zeta[-1] + zeta[-1])
-    # AnaVal2 = (2*Ecm+XC)/3 - (1/2)*(kappa[-1]/zeta[-1] + zeta[-1]) - (np.sqrt(3)/2)*(kappa[-1]/zeta[-1] - zeta[-1])*1j
-    # AnaVal3 = (2*Ecm+XC)/3 - (1/2)*(kappa[-1]/zeta[-1] + zeta[-1]) + (np.sqrt(3)/2)*(kappa[-1]/zeta[-1] - zeta[-1])*1j
 
     L = (C**2) - (E**2) - (G**2) + (2*R*R) - (2*E*X)
     M = 2*E+X
@@ -516,7 +500,7 @@ for j in range(len(hopfieldCoeff)):
                          xaxis_title='Gain of Band 1',
                          yaxis_title= 'Coeff',
                          showlegend=True)
-    hopFig.write_html('plots/' + 'Hopfield_3x3_mode' + str(j+1) + '.html', auto_open=False)
+    hopFig.write_html('plots/' + 'Hopfield_3x3_mode' + str(j+1) + '.html', auto_open=True)
 
 ############ Plot all Hopfield coefficients of all eigenmodes in one plot #################
 hopFigNames = ['Gainy Cavity', 'Lossy Cavity', 'Exciton']
@@ -533,7 +517,7 @@ for j in range(len(hopfieldCoeff)):
                             xaxis_title='Gain of Band 1',
                             yaxis_title= 'Coeff',
                             showlegend=True)
-hopFigAll.write_html('plots/' + 'Hopfield_3x3_mode_ALL' + '.html', auto_open=True)
+hopFigAll.write_html('plots/' + 'Hopfield_3x3_mode_ALL' + '.html', auto_open=False)
 
 
 
@@ -605,6 +589,7 @@ AnaValCPlot.write_html('plots/' + 'AnalyticImaginaryEigenVals.html', auto_open=F
 
 
 ################# Plot the THT eigenvalues ###################################################
+
 ###########################################################################################
 ## plot analytic solution of eigenvals
 phaseTransPlot = go.Figure()
@@ -620,7 +605,7 @@ phaseTransPlot.update_layout(title= 'Analytic solution parameters',
                              xaxis_title='Gain of Band 1',
                              yaxis_title= 'vals',
                              showlegend=True)
-phaseTransPlot.write_html('plots/' + 'AnalyticSolutionParameters.html', auto_open=True)
+phaseTransPlot.write_html('plots/' + 'AnalyticSolutionParameters.html', auto_open=False)
 
 
 
@@ -631,6 +616,7 @@ numOfPoints = len(gainVal)
 valNames = ['Eigen Val 1', 'Eigen Val 2', 'Eigen Val 3', 'Complex', 'Real']
 valColors = ['rgb(15,25,195)', 'rgb(195,5,25)', 'rgb(10,195,25)']
 figs = [go.Figure(), go.Figure()]
+
 
 for j in range(len(['realPart', 'complexPart'])):
     fig = figs[j]

@@ -14,17 +14,19 @@ import os
 amax = 401 # number of iteration when computing eigenvalues
 
 ## Default constants
-Ecm = 0.7294-0.00009*1j
-RabiC = 0.009
-XC = 0.7294-0.00009*1j
+E2 = 0
+detuning = -10
+E1 = E2 + detuning
+C = 1
+r=5
 
 ## Create empty dataframe for storing data
 df_Eigen = pd.DataFrame(columns=['eigVal',
                                  'eigVec',
                                  'Coupling coeff.',
-                                 'Ecm',
-                                 'XC',
-                                 'Ecm-XC'])
+                                 'E1',
+                                 'E2',
+                                 'E1-E2'])
 
 ########################################
 ##                                    ##
@@ -32,14 +34,14 @@ df_Eigen = pd.DataFrame(columns=['eigVal',
 ##                                    ##
 ########################################
 
-initialC = RabiC
+initialE1 = E1
 for a in range(1,amax+1):
-    RabiC = initialC + 0.000035*(a-1)
-    M = np.array([[  Ecm-0.005j,  RabiC/2    ],
-                  [  RabiC/2,      XC+0.005j ]])
+    E1 = initialE1 + 0.1*(a-1)
+    M = np.array([[   E1,   C ],
+                  [  r*C,   E2]])
     eigVal, eigVec = np.linalg.eig(M)
     # append eigenvals and eigenvectors to dataframe
-    df_Eigen.loc[len(df_Eigen.index)] = [eigVal, eigVec, RabiC/2, Ecm, XC, Ecm-XC]
+    df_Eigen.loc[len(df_Eigen.index)] = [eigVal, eigVec, C, E1, E2, E1-E2]
 
 ## output the dataframe
 df_Eigen.to_csv('result.csv')
@@ -76,8 +78,8 @@ eigVec2 = [[vecs[0][1], vecs[1][1]] for vecs in eigVecsSet]
 HopfCoeffC = [vec[0]**2 for vec in eigVec1]
 HopfCoeffE = [vec[1]**2 for vec in eigVec1]
 
-Ediffs = np.real(df_Eigen['Ecm-XC'].values.tolist())
-Cs = df_Eigen['Coupling coeff.']
+Ediffs = np.real(df_Eigen['E1-E2'].values.tolist())
+
 
 ## plot the eigenvalues
 if not os.path.exists('plots'):
@@ -89,21 +91,21 @@ figs = [go.Figure(), go.Figure()]
 for j in range(len(figs)):
     for i in range(len(realCompEigVals[j])):
         fig = figs[j]
-        fig.add_trace(go.Scatter(x=Cs, y=realCompEigVals[j][i], mode='markers', name=names[i]))
-#    if (j==0):
-#        fig.add_trace(go.Scatter(x=Cs, y=df_Eigen['Ecm'], mode='lines', name='Ecm'))
-#        fig.add_trace(go.Scatter(x=Cs, y=df_Eigen['XC'], mode='lines', name='XC'))
+        fig.add_trace(go.Scatter(x=Ediffs, y=realCompEigVals[j][i], mode='markers', name=names[i]))
+    if (j==0):
+        fig.add_trace(go.Scatter(x=Ediffs, y=df_Eigen['E1'], mode='lines', name='E1'))
+        fig.add_trace(go.Scatter(x=Ediffs, y=df_Eigen['E2'], mode='lines', name='E2'))
     fig.update_layout(title= names[-j-1] + ' part of Eigenvals',
-                      xaxis_title='Coupling strength',
+                      xaxis_title='Energy difference between eE2iton and cavity',
                       yaxis_title= names[-j-1] + ' part of Eigenvals',
                       showlegend=True)
     fig.write_html('plots/' + names[-j-1] + 'PartEigen.html', auto_open=True)
 
 VecFig = go.Figure()
-VecFig.add_trace(go.Scatter(x=Cs, y=HopfCoeffC, mode='markers', name='Cavity'))
-VecFig.add_trace(go.Scatter(x=Cs, y=HopfCoeffE, mode='markers', name='Exciton'))
+VecFig.add_trace(go.Scatter(x=Ediffs, y=HopfCoeffC, mode='markers', name='Cavity'))
+VecFig.add_trace(go.Scatter(x=Ediffs, y=HopfCoeffE, mode='markers', name='EE2iton'))
 VecFig.update_layout(title= 'Hopfield Coefficients',
-                  xaxis_title='Coupling strength',
+                  xaxis_title='Energy difference between eE2iton and cavity',
                   yaxis_title='Coefficient',
                   showlegend=True)
 VecFig.write_html('plots/' + '2x2_HopfieldCoeff_woGain.html', auto_open=True)
